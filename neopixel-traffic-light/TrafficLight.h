@@ -4,6 +4,8 @@
 // Author: Lukas Nellen
 
 #include <FastLED.h>
+#include <elapsedMillis.h>
+#include <cstdint>
 
 // defaults for use with Teesy LC
 // 16 pixel NeoPixel ring
@@ -19,14 +21,13 @@ public:
   TrafficLight(const unsigned int pixels = 16, const unsigned int offset = 13);
 
   // update pixels, to be called in main loop or special thread
-  //void process();
+  void process();
 
   // set logical status
   void set(const Status status);
 
   // set physical status
-  void setOff(const bool show);
-  void setOff() { setOff(true); };
+  void setOff();
 
   void setRed();
 
@@ -34,17 +35,24 @@ public:
 
   void setGreen();
 
-  //void setRedAll(const bool move = true);
-
-  //void setOrangeAll(const bool move = true);
-
-  //void setGreenAll(const bool move = false);
+  void setOrangeFade();
   
+  void setRedBlink();
+    
 private:
-  static const unsigned int cMaxPixels = 64;
-  static const unsigned char cDataPin = 17;         // Teensy LC pin with 5V level shifter
+  static constexpr unsigned int cMaxPixels = 64;
+  static constexpr unsigned char cDataPin = 17;         // Teensy LC pin with 5V level shifter
+  static constexpr unsigned int cBlinkTime = 1000;      // Time for on and off when blinking
+  static constexpr unsigned int cFadeFrame = 40;        // 25 frames per second
+  static constexpr unsigned int cFadePhase = 4;         // phase to step brightness per frame (angle 0..255)
+  
+
+  void setAll(const CRGB& colour);
 
   void setPixels(const int*, unsigned int count, const CRGB& colour);
+
+  void processBlink();
+  void processFade();
   
   const unsigned int pixels_;
   const unsigned int offset_;
@@ -54,6 +62,14 @@ private:
   typedef void (TrafficLight::*ActionPtr)();
 
   ActionPtr actions_[maxStatus];
+
+  ActionPtr processAction_;
+
+  // for blinking or fading
+  elapsedMillis time_;
+  CRGB colour_;
+  uint8_t brightness_; 
+  uint8_t angle_;
 };
 
 #endif

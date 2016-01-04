@@ -24,8 +24,8 @@ private:
   void error();
 
   // sizes
-  static const unsigned int cBufferSize = 64;
-  static const unsigned int cMaxCommands = 10;
+  static constexpr unsigned int cBufferSize = 64;
+  static constexpr unsigned int cMaxCommands = 10;
 
   // types
   typedef void (Command::*FSMPtr)(const char c);

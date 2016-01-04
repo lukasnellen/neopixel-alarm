@@ -16,4 +16,5 @@ void
 loop() 
 {
   gCmd.process();
+  gLight.process();
 }
