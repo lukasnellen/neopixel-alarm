@@ -4,7 +4,6 @@
 // Author: Lukas Nellen
 
 #include <FastLED.h>
-#include <elapsedMillis.h>
 #include <cstdint>
 
 // defaults for use with Teesy LC
@@ -66,7 +65,7 @@ private:
   ActionPtr processAction_;
 
   // for blinking or fading
-  elapsedMillis time_;
+  CEveryNMillis timer_;
   CRGB colour_;
   uint8_t brightness_; 
   uint8_t angle_;

@@ -14,7 +14,7 @@ TrafficLight::TrafficLight(const unsigned int pixels, const unsigned int offset)
   buffer_{},
   actions_{ &TrafficLight::setOff, &TrafficLight::setGreen, &TrafficLight::setOrangeFade, &TrafficLight::setRedBlink },
   processAction_(nullptr),
-  time_(),
+  timer_(),
   colour_(),
   brightness_(0xff),
   angle_(0)
@@ -85,7 +85,10 @@ TrafficLight::setRedBlink()
   processAction_ = &TrafficLight::processBlink;
   colour_ = CRGB::Red;
   brightness_ = 0;
-  time_ = cBlinkTime;
+  timer_.setPeriod(cBlinkTime);
+  timer_.trigger();
+  CRGB c = colour_;
+  setAll(c);
 }
 
 void
@@ -94,33 +97,28 @@ TrafficLight::setOrangeFade()
   processAction_ = &TrafficLight::processFade;
   colour_ = CRGB::Orange;
   angle_ = 0;
-  time_ = cFadeFrame;
+  timer_.setPeriod(cFadeFrame);
+  timer_.trigger();
+  CRGB c = colour_;
+  setAll(c);
 }
 
 void
 TrafficLight::processBlink()
 {
-  if (time_ > cBlinkTime) {
-    time_ = 0;
+  if (timer_.ready()) {
     brightness_ = ~brightness_;
-    CRGB c = colour_;
-    c.nscale8(brightness_);
-    setAll(c);
-    FastLED.show();
+    FastLED.show(brightness_);
   }
 }
 
 void
 TrafficLight::processFade()
 {
-  if (time_ > cFadeFrame) {
-    time_ = 0;
+  if (timer_.ready()) {
     brightness_ = sin8(angle_);
     angle_ += cFadePhase;
-    CRGB c = colour_;
-    c.nscale8_video(brightness_);
-    setAll(c);
-    FastLED.show();
+    FastLED.show(brightness_);
   }
 }
 
