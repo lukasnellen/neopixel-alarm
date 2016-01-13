@@ -12,7 +12,7 @@ TrafficLight::TrafficLight(const unsigned int pixels, const unsigned int offset)
 : pixels_(pixels),
   offset_(offset),
   buffer_{},
-  actions_{ &TrafficLight::setOff, &TrafficLight::setGreen, &TrafficLight::setOrangeFade, &TrafficLight::setRedBlink },
+  actions_{ &TrafficLight::setOff, &TrafficLight::setGreen, &TrafficLight::setOrange, &TrafficLight::setRed },
   processAction_(nullptr),
   timer_(),
   colour_(),
