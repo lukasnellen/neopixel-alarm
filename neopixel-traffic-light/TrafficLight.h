@@ -3,7 +3,9 @@
 // Traffic light class
 // Author: Lukas Nellen
 
+#include "Hardware.h"
 #include <FastLED.h>
+#include <elapsedMillis.h>
 #include <cstdint>
 
 // defaults for use with Teesy LC
@@ -12,63 +14,58 @@
 
 class TrafficLight
 {
+
 public:
   enum Status {
     off, normal, warning, error, maxStatus
   };
   
-  TrafficLight(const unsigned int pixels = 16, const unsigned int offset = 13);
+  typedef void (TrafficLight::*ActionPtr)(const CRGB& );
+  typedef void (TrafficLight::*ProcessPtr)();
+
+  TrafficLight(const unsigned int offset = 0);
 
   // update pixels, to be called in main loop or special thread
   void process();
 
   // set logical status
   void set(const Status status);
+  void setAction(const Status status, ActionPtr action);
 
   // set physical status
-  void setOff();
-
-  void setRed();
-
-  void setOrange();
-
-  void setGreen();
-
-  void setOrangeFade();
-  
-  void setRedBlink();
+  void setTop(const CRGB& colour);
+  void setBottom(const CRGB& colour);
+  void setHorizontal(const CRGB& colour);
+  void setVertical(const CRGB& colour);
+  void setAll(const CRGB& colour);
+  void setBlink(const CRGB& colour);
+  void setCrossBlink(const CRGB& colour);
+  void setFade(const CRGB& colour);
+//  void set(const CRGB& colour);
     
 private:
-  static constexpr unsigned int cMaxPixels = 64;
-  static constexpr unsigned char cDataPin = 17;         // Teensy LC pin with 5V level shifter
-  static constexpr unsigned int cBlinkTime = 1000;      // Time for on and off when blinking
-  static constexpr unsigned int cFadeFrame = 40;        // 25 frames per second
-  static constexpr unsigned int cFadePhase = 4;         // phase to step brightness per frame (angle 0..255)
   
-
-  void setAll(const CRGB& colour);
-
   void setPixels(const int*, unsigned int count, const CRGB& colour);
 
   void processBlink();
   void processFade();
+  void processCrossBlink();
   
-  const unsigned int pixels_;
   const unsigned int offset_;
 
-  CRGB buffer_[cMaxPixels];
-
-  typedef void (TrafficLight::*ActionPtr)();
+  CRGB buffer_[Hardware::leds];
 
   ActionPtr actions_[maxStatus];
+  CRGB actionColour_[maxStatus];
 
-  ActionPtr processAction_;
+  ProcessPtr processAction_;
 
   // for blinking or fading
-  CEveryNMillis timer_;
+  elapsedMillis time_;
   CRGB colour_;
   uint8_t brightness_; 
   uint8_t angle_;
+  long int pos_;
 };
 
 #endif

@@ -3,23 +3,25 @@
 #include <FastLED.h>
 
 namespace {
-  const int redPixels[] = {  0, 1, 2, 3, 4, 5 };
-  const int orangePixels[] = { 5, 6, 7, 8, 13, 14, 15, 16 };
-  const int greenPixels[] = {  8, 9, 10, 11, 12, 13 };
+  const int topPixels[] = {  0, 1, 2, 15, 14, 13 };
+  const int horizontalPixels[] = { 2, 3, 4, 5, 10, 11, 12, 13};
+  const int bottomPixels[] = {  5, 6, 7, 8, 9, 10 };
+  const int verticalPixels[] = { 0, 1, 14, 15, 6, 7, 8, 9 };
 }
 
-TrafficLight::TrafficLight(const unsigned int pixels, const unsigned int offset)
-: pixels_(pixels),
-  offset_(offset),
+TrafficLight::TrafficLight(const unsigned int offset)
+: offset_(offset),
   buffer_{},
-  actions_{ &TrafficLight::setOff, &TrafficLight::setGreen, &TrafficLight::setOrange, &TrafficLight::setRed },
+  actions_{ &TrafficLight::setAll, &TrafficLight::setBottom, &TrafficLight::setHorizontal, &TrafficLight::setTop },
+  actionColour_{ CRGB::Black, CRGB::Green, CRGB::Orange, CRGB::Red },
   processAction_(nullptr),
-  timer_(),
+  time_(),
   colour_(),
   brightness_(0xff),
-  angle_(0)
+  angle_(0),
+  pos_(0)
 {
-  FastLED.addLeds<NEOPIXEL, cDataPin>(buffer_, pixels_);
+  FastLED.addLeds<NEOPIXEL, Hardware::ledPin>(buffer_, Hardware::leds);
 }
 
 void
@@ -32,93 +34,119 @@ TrafficLight::process()
 void
 TrafficLight::set(const Status status)
 {
-  (this->*actions_[status])();
+  (this->*actions_[status])(actionColour_[status]);
 }
 
-void TrafficLight::setAll(const CRGB& colour)
+void
+TrafficLight::setAction(const Status status, ActionPtr action)
 {
-  for (unsigned int i = pixels_; i ;)
-    buffer_[--i] = colour;
+  actions_[status] = action;
 }
 
 void
 TrafficLight::setPixels(const int* pixels, unsigned int count, const CRGB& colour)
 {
-  setAll(CRGB::Black);
+  FastLED.clear(true);
   for ( ;count-- ; )
-    buffer_[(*pixels++ + offset_) % pixels_] = colour;;
+    buffer_[(*pixels++ + offset_) % Hardware::leds] = colour;;
   FastLED.show();
 }
 
-void
-TrafficLight::setOff()
+void TrafficLight::setAll(const CRGB& colour)
 {
-  setAll(CRGB::Black);
-  FastLED.show();
+  FastLED.showColor(colour);
   processAction_ = nullptr;
 }
 
 void
-TrafficLight::setRed()
+TrafficLight::setTop(const CRGB& colour)
 {
-  setPixels(redPixels, sizeof(redPixels) / sizeof(int), CRGB::Red);
+  setPixels(topPixels, sizeof(topPixels) / sizeof(int), colour);
   processAction_ = nullptr;
 }
 
 void
-TrafficLight::setOrange()
+TrafficLight::setBottom(const CRGB& colour)
 {
-  setPixels(orangePixels, sizeof(orangePixels) / sizeof(int), CRGB::Orange);
+  setPixels(bottomPixels, sizeof(bottomPixels) / sizeof(int), colour);
   processAction_ = nullptr;
 }
 
 void
-TrafficLight::setGreen()
+TrafficLight::setHorizontal(const CRGB& colour)
 {
-  setPixels(greenPixels, sizeof(greenPixels) / sizeof(int), CRGB::Green);
+  setPixels(horizontalPixels, sizeof(horizontalPixels) / sizeof(int), colour);
   processAction_ = nullptr;
 }
 
 void
-TrafficLight::setRedBlink()
+TrafficLight::setVertical(const CRGB& colour)
+{
+  setPixels(verticalPixels, sizeof(verticalPixels) / sizeof(int), colour);
+  processAction_ = nullptr;
+}
+
+void
+TrafficLight::setBlink(const CRGB& colour)
 {
   processAction_ = &TrafficLight::processBlink;
-  colour_ = CRGB::Red;
+  colour_ = colour;
   brightness_ = 0;
-  timer_.setPeriod(cBlinkTime);
-  timer_.trigger();
+  time_ = Hardware::blinkTime;
   CRGB c = colour_;
-  setAll(c);
 }
 
 void
-TrafficLight::setOrangeFade()
+TrafficLight::setFade(const CRGB& colour)
 {
   processAction_ = &TrafficLight::processFade;
-  colour_ = CRGB::Orange;
+  colour_ = colour;
   angle_ = 0;
-  timer_.setPeriod(cFadeFrame);
-  timer_.trigger();
+  time_ = Hardware::fadeFrame;
   CRGB c = colour_;
-  setAll(c);
+}
+
+void
+TrafficLight::setCrossBlink(const CRGB& colour)
+{
+  processAction_ = &TrafficLight::processCrossBlink;
+  pos_ = 0;
+  colour_ = colour;
+  time_ = Hardware::blinkTime;
 }
 
 void
 TrafficLight::processBlink()
 {
-  if (timer_.ready()) {
+  if (time_ > Hardware::blinkTime) {
+    time_ = 0;
     brightness_ = ~brightness_;
-    FastLED.show(brightness_);
+    FastLED.showColor(colour_, brightness_);
   }
 }
 
 void
 TrafficLight::processFade()
 {
-  if (timer_.ready()) {
+  if (time_ > Hardware::fadeFrame) {
+    time_ = 0;
     brightness_ = sin8(angle_);
-    angle_ += cFadePhase;
-    FastLED.show(brightness_);
+    angle_ += Hardware::fadePhase;
+    FastLED.showColor(colour_, brightness_);
   }
+}
+
+void
+TrafficLight::processCrossBlink()
+{
+  if (time_ > Hardware::blinkTime) {
+    time_ = 0;
+    pos_ ^= 1;
+    if (pos_)
+      setPixels(horizontalPixels, sizeof(horizontalPixels) / sizeof(int), colour_);
+    else
+      setPixels(verticalPixels, sizeof(verticalPixels) / sizeof(int), colour_);
+  }
+  FastLED.show();
 }
 
