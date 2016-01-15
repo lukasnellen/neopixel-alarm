@@ -2,12 +2,15 @@
 #define _COMANND_H_
 
 #include "TrafficLight.h"
+#include "Alarm.h"
 
 class Command {
 public:
-  Command(TrafficLight& light);
+  Command(TrafficLight& light, Alarm& alarm);
   
   void process(); 
+  
+  Alarm& getAlarm() { return alarm_; }
   
 private:
   // Functions for parsing
@@ -22,6 +25,7 @@ private:
   void normal();
   void warning();
   void error();
+  void beep();
 
   // sizes
   static constexpr unsigned int cBufferSize = 64;
@@ -44,6 +48,7 @@ private:
   char *argPtr_;
   FSMPtr currentAction_;
   TrafficLight& light_;
+  Alarm& alarm_;
 };
 
 #endif

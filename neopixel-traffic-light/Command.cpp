@@ -2,6 +2,7 @@
 #include "TrafficLight.h"
 #include <Arduino.h>
 #include <cstring>
+#include <cstdlib>
 
 namespace {
   const char cStart = ':';
@@ -15,15 +16,17 @@ Command::commandPair Command::commands[] = {
   {"normal", &Command::normal},
   {"warning", &Command::warning},
   {"error", &Command::error},
+  {"beep", &Command::beep},
   {nullptr, nullptr},
 };
 
-Command::Command(TrafficLight& light)
+Command::Command(TrafficLight& light, Alarm& alarm)
 : buffer_{},
   bufferIndex_(0),
   argPtr_(nullptr),
   currentAction_(&Command::discard),
-  light_(light)
+  light_(light),
+  alarm_(alarm)
 {
   Serial.begin(9600);
 }
@@ -116,5 +119,14 @@ void
 Command::error()
 {
   light_.set(TrafficLight::error);
+}
+
+void
+Command::beep()
+{
+  unsigned long count = 3;
+  if (argPtr_) 
+    count = strtoul(argPtr_, nullptr, 10);
+  alarm_.beep(count);
 }
 
