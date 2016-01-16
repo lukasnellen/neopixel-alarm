@@ -31,6 +31,7 @@ public:
   // set logical status
   void set(const Status status);
   void setAction(const Status status, ActionPtr action);
+  void setOffset(const unsigned int offset = 0) { offset_ = offset % Hardware::leds; }
 
   // set physical status
   void setTop(const CRGB& colour);
@@ -51,7 +52,7 @@ private:
   void processFade();
   void processCrossBlink();
   
-  const unsigned int offset_;
+  unsigned int offset_;
 
   CRGB buffer_[Hardware::leds];
 

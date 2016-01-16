@@ -16,7 +16,7 @@ namespace Hardware {
   constexpr unsigned int fadePhase = 4;         // phase to step brightness per frame (angle 0..255)
 
   // Buzzer
-  constexpr unsigned int buzzerPin = 3;
+  constexpr unsigned int buzzerPin = 6;
   constexpr unsigned int buzzerFrequency = 4000; // 4kHz buzzer
   constexpr unsigned int beepDuration = 500;     // in ms
   constexpr unsigned int beepInterval = 1000;    // in ms; intervall for multiple beeps

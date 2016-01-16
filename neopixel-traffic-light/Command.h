@@ -30,7 +30,7 @@ private:
 
   // Configure
   void set();
-
+  void setOffset();
   // sizes
   static constexpr unsigned int cBufferSize = 64;
   static constexpr unsigned int cMaxCommands = 10;

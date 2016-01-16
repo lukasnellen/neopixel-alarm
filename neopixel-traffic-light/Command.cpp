@@ -18,6 +18,7 @@ Command::commandPair Command::commands[] = {
   {"error", &Command::error},
   {"beep", &Command::beep},
   {"set", &Command::set},
+  {"offset", &Command::setOffset},
   {nullptr, nullptr},
 };
 
@@ -147,5 +148,14 @@ Command::set()
       
     }
   }
+}
+
+void
+Command::setOffset()
+{
+  unsigned long offset = 0;
+  if (argPtr_) 
+    offset = strtoul(argPtr_, nullptr, 10);
+  light_.setOffset(offset);
 }
 
