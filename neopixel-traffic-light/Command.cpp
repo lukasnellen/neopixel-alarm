@@ -17,6 +17,7 @@ Command::commandPair Command::commands[] = {
   {"warning", &Command::warning},
   {"error", &Command::error},
   {"beep", &Command::beep},
+  {"set", &Command::set},
   {nullptr, nullptr},
 };
 
@@ -128,5 +129,23 @@ Command::beep()
   if (argPtr_) 
     count = strtoul(argPtr_, nullptr, 10);
   alarm_.beep(count);
+}
+
+void
+Command::set()
+{
+  if (argPtr_) {
+    if (strcmp(argPtr_, "normal") == 0) {
+      light_.setAction(TrafficLight::normal, &TrafficLight::setBottom);
+      light_.setAction(TrafficLight::warning, &TrafficLight::setHorizontal);
+      light_.setAction(TrafficLight::error, &TrafficLight::setTop);
+    }
+    if (strcmp(argPtr_, "blink") == 0) {
+      light_.setAction(TrafficLight::normal, &TrafficLight::setAll);
+      light_.setAction(TrafficLight::warning, &TrafficLight::setCrossBlink);
+      light_.setAction(TrafficLight::error, &TrafficLight::setBlink);
+      
+    }
+  }
 }
 

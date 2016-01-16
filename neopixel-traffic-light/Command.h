@@ -9,7 +9,8 @@ public:
   Command(TrafficLight& light, Alarm& alarm);
   
   void process(); 
-  
+
+  TrafficLight& getTrafficLight() { return light_; }
   Alarm& getAlarm() { return alarm_; }
   
 private:
@@ -26,6 +27,9 @@ private:
   void warning();
   void error();
   void beep();
+
+  // Configure
+  void set();
 
   // sizes
   static constexpr unsigned int cBufferSize = 64;
