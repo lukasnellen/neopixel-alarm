@@ -53,6 +53,7 @@ private:
   FSMPtr currentAction_;
   TrafficLight& light_;
   Alarm& alarm_;
+  bool usbConnected_;
 };
 
 #endif

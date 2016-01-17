@@ -28,14 +28,26 @@ Command::Command(TrafficLight& light, Alarm& alarm)
   argPtr_(nullptr),
   currentAction_(&Command::discard),
   light_(light),
-  alarm_(alarm)
+  alarm_(alarm),
+  usbConnected_(false)
 {
   Serial.begin(9600);
+  pinMode(Hardware::serialUSBLed, OUTPUT);
 }
 
 void
 Command::process()
 {
+  if (Serial.dtr()) {
+    digitalWrite(Hardware::serialUSBLed, HIGH);
+    if (!usbConnected_) {
+      delay(500);
+      usbConnected_ = true;
+    }
+  } else {
+    digitalWrite(Hardware::serialUSBLed, LOW);
+    usbConnected_ = false;
+  }
   while (Serial.available()) {
     (this->*currentAction_)(Serial.read());
   }

@@ -15,6 +15,9 @@ namespace Hardware {
   constexpr unsigned int fadeFrame = 40;        // 25 frames per second
   constexpr unsigned int fadePhase = 4;         // phase to step brightness per frame (angle 0..255)
 
+  // Serial interface related
+  constexpr unsigned int serialUSBLed = 13;        ///< Teensy 3.x, LC internal led pin
+
   // Buzzer
   constexpr unsigned int buzzerPin = 6;
   constexpr unsigned int buzzerFrequency = 4000; // 4kHz buzzer

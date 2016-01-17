@@ -55,8 +55,7 @@ class main(object):
     def run(self):
         self.ser = serial.Serial(self.cfg.port)
 
-        # two lines of setup magic ...
-        time.sleep(1)
+        # empty message to reset communications
         self.ser.write(":\r\n")
 
         cmd = self.cfg.args.cmd
