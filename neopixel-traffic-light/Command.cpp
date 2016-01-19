@@ -35,6 +35,11 @@ Command::Command(TrafficLight& light, Alarm& alarm)
   pinMode(Hardware::serialUSBLed, OUTPUT);
 }
 
+/**
+ * Processing loop activity
+ * - Detect if serial port open or closed.
+ * - read and dispatch data if present.
+ */
 void
 Command::process()
 {
@@ -90,7 +95,7 @@ Command::collect(const char c)
 void
 Command::end1(const char c)
 {
-  if (c == cEnd2) 
+  if (c == cEnd2)
     Command::execute();
   restart();
 }
@@ -139,7 +144,7 @@ void
 Command::beep()
 {
   unsigned long count = 3;
-  if (argPtr_) 
+  if (argPtr_)
     count = strtoul(argPtr_, nullptr, 10);
   alarm_.beep(count);
 }
@@ -157,7 +162,7 @@ Command::set()
       light_.setAction(TrafficLight::normal, &TrafficLight::setAll);
       light_.setAction(TrafficLight::warning, &TrafficLight::setCrossBlink);
       light_.setAction(TrafficLight::error, &TrafficLight::setBlink);
-      
+
     }
   }
 }
@@ -166,7 +171,7 @@ void
 Command::setOffset()
 {
   unsigned long offset = 0;
-  if (argPtr_) 
+  if (argPtr_)
     offset = strtoul(argPtr_, nullptr, 10);
   light_.setOffset(offset);
 }

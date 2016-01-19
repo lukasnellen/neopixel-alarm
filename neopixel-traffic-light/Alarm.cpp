@@ -2,6 +2,9 @@
 #include "Hardware.h"
 #include <Arduino.h>
 
+/**
+ * Processing loop activity: start next beep if multiple beeps requested.
+ */
 void
 Alarm::process()
 {
@@ -18,7 +21,7 @@ Alarm::beepOnce()
   tone(Hardware::buzzerPin, frequency_, Hardware::beepDuration);
 }
 
-void 
+void
 Alarm::beep(const unsigned int count)
 {
   count_ = count;

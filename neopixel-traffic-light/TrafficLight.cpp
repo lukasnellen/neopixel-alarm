@@ -24,6 +24,11 @@ TrafficLight::TrafficLight(const unsigned int offset)
   FastLED.addLeds<NEOPIXEL, Hardware::ledPin>(buffer_, Hardware::leds);
 }
 
+/**
+ * Processing loop action. This is used to implement dynamical actions like
+ * blinking or fading of pixels. The selected action is set using the
+ * internal processAction_ pointer.
+ */
 void
 TrafficLight::process()
 {

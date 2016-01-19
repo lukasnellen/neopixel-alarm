@@ -1,4 +1,10 @@
 #! /usr//bin/env python
+"""
+Python command line interface for alarm light
+
+.. codeauthor:: Lukas Nellen
+
+"""
 
 from __future__ import print_function
 import serial
@@ -7,11 +13,19 @@ import os
 import sys
 
 class config(object):
+    """
+    Configurator class
+
+    Parses cmannd line and environment variables
+    """
     def __init__(self):
         self.build_parser()
         self.args = self.parser.parse_args()
 
     def build_parser(self):
+        """
+        Build the command line argument parser.
+        """
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument("-p", "--port",
                                  help="Serial port")
@@ -39,6 +53,11 @@ class config(object):
 
     @property
     def port(self):
+        """
+        Serial port to use
+
+        :return: string
+        """
         if self.args.port is not None:
             return self.args.port
         try:
@@ -48,10 +67,18 @@ class config(object):
             sys.exit(1)
 
 class main(object):
+    """
+    Main routine class
+
+    Provides member functions for all sub-commands.
+    """
     def __init__(self):
         self.cfg=config()
 
     def run(self):
+        """
+        Main entry point for the script. Gets called when running the module.
+        """
         self.ser = serial.Serial(self.cfg.port)
 
         # empty message to reset communications
