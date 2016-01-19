@@ -93,7 +93,6 @@ TrafficLight::setBlink(const CRGB& colour)
   colour_ = colour;
   brightness_ = 0;
   time_ = Hardware::blinkTime;
-  CRGB c = colour_;
 }
 
 void
@@ -103,7 +102,6 @@ TrafficLight::setFade(const CRGB& colour)
   colour_ = colour;
   angle_ = 0;
   time_ = Hardware::fadeFrame;
-  CRGB c = colour_;
 }
 
 void

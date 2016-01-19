@@ -5,7 +5,6 @@ import serial
 import argparse
 import os
 import sys
-import time
 
 class config(object):
     def __init__(self):
