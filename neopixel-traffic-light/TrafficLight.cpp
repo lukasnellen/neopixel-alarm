@@ -18,6 +18,7 @@ TrafficLight::TrafficLight(const unsigned int offset)
   time_(),
   colour_(),
   brightness_(0xff),
+  scale_(0x7f),
   angle_(0),
   pos_(0)
 {
@@ -54,12 +55,12 @@ TrafficLight::setPixels(const int* pixels, unsigned int count, const CRGB& colou
   FastLED.clear(true);
   for ( ;count-- ; )
     buffer_[(*pixels++ + offset_) % Hardware::leds] = colour;;
-  FastLED.show();
+  FastLED.show(scale_);
 }
 
 void TrafficLight::setAll(const CRGB& colour)
 {
-  FastLED.showColor(colour);
+  FastLED.showColor(colour, scale_);
   processAction_ = nullptr;
 }
 
@@ -124,7 +125,7 @@ TrafficLight::processBlink()
   if (time_ > Hardware::blinkTime) {
     time_ = 0;
     brightness_ = ~brightness_;
-    FastLED.showColor(colour_, brightness_);
+    FastLED.showColor(colour_, scale8(brightness_, scale_));
   }
 }
 
@@ -135,7 +136,7 @@ TrafficLight::processFade()
     time_ = 0;
     brightness_ = sin8(angle_);
     angle_ += Hardware::fadePhase;
-    FastLED.showColor(colour_, brightness_);
+    FastLED.showColor(colour_, scale8(brightness_, scale_));
   }
 }
 
@@ -150,6 +151,5 @@ TrafficLight::processCrossBlink()
     else
       setPixels(verticalPixels, sizeof(verticalPixels) / sizeof(int), colour_);
   }
-  FastLED.show();
 }
 

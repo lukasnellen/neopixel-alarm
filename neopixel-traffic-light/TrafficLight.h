@@ -52,6 +52,8 @@ public:
   void setAction(const Status status, ActionPtr action);
   /// Set the offset
   void setOffset(const unsigned int offset = 0) { offset_ = offset % Hardware::leds; }
+  /// Set the bightness scale
+  void setScale(const uint8_t scale = 0xff) { scale_ = scale; }
 
   /** \name Physical actions
     */
@@ -96,6 +98,7 @@ private:
   elapsedMillis time_;
   CRGB colour_;
   uint8_t brightness_;
+  uint8_t scale_;
   uint8_t angle_;
   long int pos_;
 };

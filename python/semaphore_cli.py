@@ -50,6 +50,10 @@ class config(object):
                                       help="Set pixel offset")
         offset_parser.add_argument("count", type=int, default="0", nargs="?",
                                    help="Offset for first pixel")
+        scale_parser = sp.add_parser("scale",
+                                      help="Set brightness scale")
+        scale_parser.add_argument("count", type=int, default="255", nargs="?",
+                                   help="Scale for brightness (0-255)")
 
     @property
     def port(self):
@@ -108,8 +112,11 @@ class main(object):
     def offset(self):
         self.ser.write(":offset,{}\r\n".format(self.cfg.args.count))
 
+    def scale(self):
+        self.ser.write(":scale,{}\r\n".format(self.cfg.args.count))
+
     commands = dict(off=off, normal=normal, warning=warning, error=error,
-                    beep=beep, mode=mode, offset=offset)
+                    beep=beep, mode=mode, offset=offset, scale=scale)
 
 if __name__ == "__main__":
     main().run()

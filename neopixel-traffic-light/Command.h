@@ -70,6 +70,7 @@ private:
   // Configure commands
   void set();
   void setOffset();
+  void setScale();
 
   // sizes
   static constexpr unsigned int cBufferSize = 64;

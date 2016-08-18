@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 
 namespace {
   const char cStart = ':';
@@ -19,6 +20,7 @@ Command::commandPair Command::commands[] = {
   {"beep", &Command::beep},
   {"set", &Command::set},
   {"offset", &Command::setOffset},
+  {"scale", &Command::setScale},
   {nullptr, nullptr},
 };
 
@@ -174,5 +176,14 @@ Command::setOffset()
   if (argPtr_)
     offset = strtoul(argPtr_, nullptr, 10);
   light_.setOffset(offset);
+}
+void
+
+Command::setScale()
+{
+  uint8_t scale = 0xff;
+  if (argPtr_)
+    scale = std::min(strtoul(argPtr_, nullptr, 10), 255ul);
+  light_.setScale(scale);
 }
 
